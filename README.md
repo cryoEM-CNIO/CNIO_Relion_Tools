@@ -1,6 +1,11 @@
 # README CNIO Relion Tools
 
-This is a collection of scripts that we use for LIVE feedback for On-The-Fly data collection with RELION (very useful to explore already processed datasets too!) and RELION metadata analysis. Enjoy!
+This is a collection of scripts that we during cryoEM data collection and analysis. We find them very useful and we hope that you can find them useful too :) Enjoy!
+
+ice.py --> micrograph ice estimation
+png_out.py --> generation of png files from mics and ctf images
+relion_live.py --> LIVE feedback for On-The-Fly data processing with RELION (very useful to explore already processed datasets too!) 
+relion_dashboard.py --> RELION metadata analysis
 
 *Nayim Gonzalez-Rodriguez, Emma Arean-Ulloa & Rafael Fernandez-Leiro*
 
