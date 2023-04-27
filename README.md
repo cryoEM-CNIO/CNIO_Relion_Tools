@@ -18,9 +18,7 @@ We encourage you to create a relion_dashboard conda environment that you can use
 ``` bash
 conda create -n relion_dashboard python=3.8
 conda activate relion_dashboard
-pip install pandas dash starfile pathlib2 numpy glob2 pathlib argparse seaborn scikit-learn sklearn umap-learn regex dash-cytoscape dash_bootstrap_components
-conda install -c conda-forge umap-learn
-pip install umap-learn
+pip install pandas dash starfile pathlib2 numpy glob2 pathlib argparse seaborn regex dash-cytoscape dash_bootstrap_components
 ```
 ### Clone CNIO_Relion_Tools
 
