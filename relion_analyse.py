@@ -261,38 +261,100 @@ bt_style = {"align-items": "center", "background-color": "#F2F3F4", "border": "2
 
 # Pipeline nodes
 nodes_style = [
-        {'selector':'node', 'style':{'content':'data(label)','font-family':'monospace','text-wrap':'wrap',
-                                    'text-max-width':'80px','text-overflow-wrap':'anywhere',
-                                    'text-halign': 'center','text-valign': 'center','color': 'white',
-                                    'text-outline-width': 2,'width':'90px', 'height':'90px'}},
-        {'selector':'.Import', 'style':{'background-color':'white', 'shape':'round-rectangle',
-                                        'border-style':'dashed', 'border-color':'black',
-                                        'border-width':'4px', 'width':'140px'}},
-        {'selector':'.AutoPick', 'style':{'background-color':'cornflowerblue'}},
-        {'selector':'.Class3D', 'style':{'background-color':'#bb342f'}},
-        {'selector':'.Class2D', 'style':{'background-color':'#dda448'}},
-        {'selector':'.Select', 'style':{'background-color':'darkseagreen', 'width':'120px', 'height':'40px'}},
-        {'selector':'.Extract', 'style':{'background-color':'white', 'shape':'square',
-                                         'border-color':'black', 'border-width':'4px'}},
-        {'selector':'.Refine3D', 'style':{'background-color':'#8d6a9f'}},
-        {'selector':'.PostProcess', 'style':{'background-color':'white', 'line-color':'white', 'shape':'star',
-                                             'border-color':'black', 'border-width':'4px'}},
+    {'selector': 'node', 'style': {'content': 'data(label)', 'font-family': 'monospace', 'text-wrap': 'wrap',
+                                    'text-max-width': '80px', 'text-overflow-wrap': 'anywhere',
+                                    'text-halign': 'center', 'text-valign': 'center', 'color': 'white',
+                                    'text-outline-width': 2, 'width': '90px', 'height': '90px'}},
+    {'selector': '.Import', 'style': {'background-color': '#FFB3D9', 'shape': 'rectangle'}},  # Pastel Pink
+    {'selector': '.MotionCorr', 'style': {'background-color': '#FFD9B3'}},  # Pastel Orange
+    {'selector': '.CtfFind', 'style': {'background-color': '#C9C9C9'}},  # Silver
+    {'selector': '.AutoPick', 'style': {'background-color': '#A3D8E9'}},  # Pastel Blue
+    {'selector': '.Extract', 'style': {'background-color': '#FFB3D9', 'shape': 'square'}},  # Pastel Pink
+    {'selector': '.Select', 'style': {'background-color': '#B9E5C0', 'width': '120px', 'height': '40px'}},  # Pastel Green
+    {'selector': '.Class2D', 'style': {'background-color': '#FFEAB3'}},  # Pastel Yellow
+    {'selector': '.Class3D', 'style': {'background-color': '#FFB3B0'}},  # Pastel Salmon
+    {'selector': '.Refine3D', 'style': {'background-color': '#D9C3D9'}},  # Thistle
+    {'selector': '.MaskCreate', 'style': {'background-color': '#FFB3B0'}},  # Pastel Salmon
+    {'selector': '.Polish', 'style': {'background-color': '#C2E0E2'}},  # Pastel Cyan
+    {'selector': '.LocalResolution', 'style': {'background-color': '#F0CB95'}},  # Pastel Apricot ## Double check this
+    {'selector': '.CtfRefinement', 'style': {'background-color': '#B1E4B4'}},  # Pastel Green ## Double check this
+    {'selector': '.Subtract', 'style': {'background-color': '#A8C3D9'}},  # Pastel Blue  # Double check this
+    {'selector': '.PostProcess', 'style': {'background-color': '#E9E9E9', 'line-color': '#E9E9E9', 'shape': 'star'}},  # Pastel Gray
+    {'selector': '.External', 'style': {'background-color': '#C5E5F0'}},  # Pale Cyan
 ]
+
 
 hover_style = {
     'position': 'fixed',
     'z-index': '1',
     'bottom': '10px',
     'right': '10px',
-    'padding':'10px',
+    'padding': '20px',
     'overflow-y': 'scroll',
-    'background-color': '#dadada',
+    'background-color': '#f7f7f7',
+    'box-shadow': '0px 2px 5px rgba(0, 0, 0, 0.2)',
+    'border-radius': '12px', 
     'height': '40%',
-    'width': '15%',
-    "font-family": "Helvetica",
-    "font-size":"0.8em",
-    # "white-space":"pre"
+    'width': '20%',
+    'font-family': 'Arial, sans-serif',
+    'font-size': '1em',
 }
+
+
+job_specific_data = {
+                    "relion.import.movies":['Cs', 'Q0', 'angpix', 'beamtilt_x', 'beamtilt_y', 'kV'], 
+
+                    "relion.motioncorr.own":['bfactor', 'bin_factor', 'do_float16', 'dose_per_frame', 'fn_gain_ref', 'gain_flip', 'gain_rot', 'group_frames', 'patch_x', 'patch_y'],
+
+                    "relion.motioncorr.motioncor2":['bfactor', 'bin_factor', 'do_float16', 'dose_per_frame', 'fn_gain_ref', 'gain_flip', 'gain_rot', 'group_frames', 'patch_x', 'patch_y'],
+
+                    "relion.ctffind.ctffind4":['box', 'ctf_win', 'dast', 'dfmax', 'dfmin', 'dfstep', 'use_noDW'],
+
+                    "relion.ctffind.gctf":['box', 'ctf_win', 'dast', 'dfmax', 'dfmin', 'dfstep', 'use_noDW'],
+
+                    "relion.manualpick":['color_label', 'diameter'],
+
+                    "relion.autopick.log":['log_adjust_thr', 'log_diam_max', 'log_diam_min', 'log_invert', 'log_maxres', 'log_upper_thr'],
+                    
+                    "relion.autopick.topaz.train":['topaz_train_parts','topaz_train_picks'],
+                    
+                    "relion.autopick.topaz.pick":['topaz_model', 'topaz_nr_particles', 'topaz_other_args', 'topaz_particle_diameter'],
+                    
+                    "relion.autopick.ref2d":['ref3d_sampling', 'ref3d_symmetry', 'shrink', 'threshold_autopick', ],
+
+                    "relion.extract":['do_fom_threshold', 'do_invert', 'do_recenter', 'do_reextract', 'do_rescale','extract_size', 'minimum_pick_fom', 'rescale'],
+
+                    "relion.extract.reextract":['do_fom_threshold', 'do_invert', 'do_recenter', 'do_reextract', 'do_rescale','extract_size', 'minimum_pick_fom', 'rescale'],
+
+                    "relion.extract":['do_float16', 'do_recenter', 'do_reextract', 'extract_size', 'minimum_pick_fom', 'rescale'],
+
+                    "relion.class2d":[ 'do_center', 'do_em', 'do_grad', 'do_helix', 'highres_limit', 'min_dedicated', 'nr_classes', 'nr_iter_em', 'nr_iter_grad', 'particle_diameter', 'tau_fudge'],
+
+                    "relion.initialmodel":['nr_classes', 'nr_iter', 'particle_diameter','sym_name'],
+
+                    "relion.class3d":['do_ctf_correction', 'do_zero_mask', 'do_fast_subsets', 'do_helix', 'do_local_ang_searches', 'dont_skip_align', 'highres_limit', 'ini_high', 'nr_classes', 'nr_iter', 'particle_diameter', 'range_psi', 'range_rot', 'range_tilt', 'sigma_angles', 'sym_name', 'tau_fudge'],
+
+                    "relion.refine3d":['auto_faster', 'auto_local_sampling', 'do_ctf_correction', 'do_zero_mask', 'ini_high', 'other_args', 'particle_diameter', 'range_psi', 'range_rot', 'range_tilt', 'sampling', 'sym_name'],
+
+                    "relion.external":['fn_exe', 'in_3dref', 'in_coords', 'in_mask', 'in_mic', 'in_mov', 'in_part','param1_label', 'param1_value', 'param2_label', 'param2_value', 'param3_label', 'param3_value', 'param4_label', 'param4_value', 'param5_label', 'param5_value', 'param6_label', 'param6_value', 'param7_label', 'param7_value', 'param8_label', 'param8_value', 'param9_label', 'param9_value'],
+
+                    "relion.localres.own":['do_queue',  'fn_mask', 'fn_mtf', 'maxres', 'minres',  'stepres'],
+
+                    "relion.ctfrefine":['do_4thorder', 'do_aniso_mag', 'do_astig', 'do_bfactor', 'do_ctf', 'do_defocus', 'do_phase', 'do_tilt', 'do_trefoil', 'minres'],
+
+                    "relion.ctfrefine.anisomag":['do_4thorder', 'do_aniso_mag', 'do_astig', 'do_bfactor', 'do_ctf', 'do_defocus', 'do_phase', 'do_tilt', 'do_trefoil', 'minres'],
+                     
+                    "relion.polish":['do_polish', 'do_float16', 'do_own_params', 'do_param_optim', 'eval_frac', 'extract_size', 'first_frame', 'last_frame', 'maxres', 'min_dedicated', 'minres', 'opt_params', 'optim_min_part', 'rescale', 'sigma_acc', 'sigma_div', 'sigma_vel'],
+
+                    "relion.polish.train":['do_polish', 'do_float16', 'do_own_params', 'do_param_optim', 'eval_frac', 'extract_size', 'first_frame', 'last_frame', 'maxres', 'min_dedicated', 'minres', 'opt_params', 'optim_min_part', 'rescale', 'sigma_acc', 'sigma_div', 'sigma_vel'],
+
+                    "relion.postprocess":['adhoc_bfac', 'angpix', 'autob_lowres', 'do_adhoc_bfac', 'do_auto_bfac','do_skip_fsc_weighting', 'low_pass', 'min_dedicated'],
+
+                    "relion.maskcreate":['angpix', 'extend_inimask', 'inimask_threshold', 'lowpass_filter', 'width_mask_edge']
+
+
+                     }
+
 
 ### Project directory
 
@@ -364,9 +426,9 @@ def serve_layout():
                         # Dropdowns for variable selection
                         html.H5('Choose axes (x, y and colouring)', style=H5_title_style),
                         html.Div(children=[
-                            dcc.Dropdown(id='mic_dropdown_x', value='rlnCtfFigureOfMerit', options=[], style=dd_style),
+                            dcc.Dropdown(id='mic_dropdown_x', value='Index', options=[], style=dd_style),
                             dcc.Dropdown(id='mic_dropdown_y', value='rlnCtfMaxResolution', options=[], style=dd_style),
-                            dcc.Dropdown(id='mic_dropdown_class', value='rlnOpticsGroup', options=[], style=dd_style),
+                            dcc.Dropdown(id='mic_dropdown_class', value='rlnCtfFigureOfMerit', options=[], style=dd_style),
                         ]),
 
                         # Scatter plot actions
@@ -622,6 +684,7 @@ def plot_pipeline(reloadgraphbutton, tapdata, current_cytoelements):
         job_data_output_ = "No node selected, nothing to display"
         hoverstyle = None  
 
+
     # Otherwise, show clicked job's information
     else:
 
@@ -632,28 +695,25 @@ def plot_pipeline(reloadgraphbutton, tapdata, current_cytoelements):
             job_file = str(tapdata['label'])+str('job.star')
 
             print(job_file)
+            job_data = starfile.read(job_file)
+            job_type = job_data['job']['rlnJobTypeLabel'][0]
+
 
             with open(job_file, 'r') as file: job_data_output = file.read()
 
+            #with starfile.read(job_file) as ffile: print(ffile)
+
             job_data_output_ = []
 
-            # Replace new line character with <br>
+            job_data_output_.append(job_file)
+            job_data_output_.append(html.Br())
+            job_data_output_.append(html.Br())
 
-            start_printing = False
-
-            for line in job_data_output.splitlines():
-
-                if line.startswith('_rlnJobOptionValue'): start_printing = True
-
-                if start_printing:
-
-                    job_data_output_.append(line)
-
-                    job_data_output_.append(html.Br())
-
-            job_data_output_ = job_data_output_[1:-1]
-
-            print(job_data_output)
+            for i in job_specific_data[job_type]:
+                val = job_data['joboptions_values']['rlnJobOptionValue'][job_data['joboptions_values']['rlnJobOptionVariable'] == i].to_string(index=False)
+                line = str(i) + ':\t' + val
+                job_data_output_.append(line)
+                job_data_output_.append(html.Br())
 
             hoverstyle = hover_style
 
@@ -715,7 +775,8 @@ def load_df_and_graphs(mic_star, mic_dd_x, mic_dd_y, mic_dd_class,
     # Merging CTF and MotionCorr data in a single dataframe for easy plotting
     if type(motion_df) == pd.DataFrame:
         motion_df = motion_df.drop('rlnOpticsGroup', axis=1)
-        job_df = pd.merge(ctf_df, motion_df) # what if they don't match?        
+        job_df = pd.merge(ctf_df, motion_df).drop(columns=['rlnMicrographName', 'rlnCtfPowerSpectrum', 'rlnMicrographMetadata']) # what if they don't match?
+        job_df.insert(0, 'Index', job_df.index)
     else:
         job_df = ctf_df
         print("motion_df empty, can't find the files")
@@ -793,7 +854,7 @@ def load_mic_ctf(ctfstar_path, clickdata):
         point_number = clickdata['points'][0]['pointNumber']
         
         ctf_df = starfile.read(ctfstar_path)['micrographs']
-        ctf_df.index += 1
+        # ctf_df.index += 1
 
         # Get image path
         mic_file_df = ctf_df['rlnMicrographName']

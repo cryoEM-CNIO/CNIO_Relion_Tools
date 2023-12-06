@@ -1,34 +1,72 @@
 # README CNIO Relion Tools
 
-This is a collection of scripts that we during cryoEM data collection and analysis. We find them very useful and we hope that you can find them useful too :) Enjoy!
+This is a collection of scripts that we use during cryoEM data collection and analysis with RELION. We find them very useful and we hope that you can find them useful too :) Enjoy!
 
-- ice.py --> micrograph ice estimation
-- png_out.py --> generation of png files from mics and ctf images
-- relion_live.py --> LIVE feedback for On-The-Fly data processing with RELION (very useful to explore already processed datasets too!) 
+- ice.py --> micrograph ice thickness/quality estimation
+- png_out.py --> generation of png files from micrographs and ctf images
+- relion_live.py --> LIVE feedback for On-The-Fly data processing with RELION (very useful to explore already processed datasets too!)
 - relion_dashboard.py --> RELION metadata analysis
 
 *Nayim Gonzalez-Rodriguez, Emma Arean-Ulloa & Rafael Fernandez-Leiro*
 
 ## Installation
 
-### Creating conda environment (or updating your python setup)
+### Creating conda environment
 
 We encourage you to create a relion_dashboard conda environment that you can use to run these scripts
 
-``` bash
-conda create -n relion_dashboard python=3.8
+```bash
+conda create -y -n relion_dashboard python=3.10
 conda activate relion_dashboard
-pip install pandas dash starfile pathlib2 numpy glob2 pathlib argparse seaborn regex dash-cytoscape dash_bootstrap_components
+pip install pandas dash==2.6.2 starfile==0.4.10 pathlib2 numpy glob2 pathlib argparse seaborn regex dash-cytoscape==0.3.0 dash_bootstrap_components==1.4.0 flask==2.1.2 werkzeug==2.1.2
 ```
+
 ### Clone CNIO_Relion_Tools
 
-`git clone https://github.com/cryoEM-CNIO/CNIO_Relion_Tools`
+Now, clone this repository to your favorite script folder or within the environment bin directory
+
+```bash
+git clone https://github.com/cryoEM-CNIO/CNIO_Relion_Tools
+```
 
 *Add the location to your PATH or provide full path when using the tools.*
 
-### Scheme for relion_it.py that includes ice estimation and pngs
+## Scheme for relion_it.py that includes ice estimation and pngs
 
-We provide an example of a Schemes folder for relion_it.py that includes the jobs for ice thickness estimation, png export for relion_live.py, and filtered_movie.star file import. Copy the Schemes folder to your working directory BEFORE running relion_it.py.
+![Alt text](pics/schemes_diagram.png)
+
+We provide an example of a Schemes folder for relion_it.py that includes the jobs for ice thickness estimation, and png export for relion_live.py. Copy the Schemes folder to your working directory BEFORE running relion_it.py.
+
+The PNG scheme is set apart from the PREP scheme so it doesn't slow down preprocessing. The default relion_it.py script won't lauch it. To launch the PNG scheme please follow either of these two options:
+
+### 1. Edit relion_it.py and insert the following in line 943, right below the section for the PROC scheme
+
+```python
+    if options['do_png']:
+
+        command = 'relion_schemer --scheme png --reset &'
+        print(' RELION_IT: executing: ', command)
+        os.system(command)
+
+        command = 'relion_schemer --scheme png --run  --pipeline_control Schemes/png/ >> Schemes/png/run.out 2>> Schemes/png/run.err  &'
+        print(' RELION_IT: executing: ', command)
+        os.system(command)
+        if do_gui:
+            command = 'relion_schemegui.py png &'
+            print(' RELION_IT: executing: ', command)
+            os.system(command)
+```
+
+**Remember to include the option ```'do_png' : 'True',``` in your options.py file that you provide relion_it.py with.**
+
+We include the example option file CNIO_Relion_Tools_options_TUTODATA.py
+
+### 2. Execute directly in the terminal:
+
+```bash
+relion_schemer --scheme png --reset &
+relion_schemer --scheme png --run  --pipeline_control Schemes/png/ >> Schemes/png/run.out 2>> Schemes/png/run.err  &
+```
 
 ## Calculate relative ice thickness for each micrograph: *ice.py*
 
@@ -40,15 +78,16 @@ This provides a simple and reasonable estimation of ice thickness that can be us
 
 **1.** Activate conda environment BEFORE opening RELION's GUI
 
-```
+```bash
 conda activate relion_dashboard
 relion
 ```
 
 **2.** Run ice.py as an external job type
 
-  - Executable: ice.py (provide full path if it is not in your PATH)
-  - Input micrograph star file: micrograph_ctf.star (it should be a star file with Ctf information from a CtfFind job!) 
+- Executable: ice.py (provide full path if it is not in your PATH)
+
+- Input micrograph star file: micrograph_ctf.star (it should be a star file with Ctf information from a CtfFind job!)
 
 Ice thickness estimation is stored in the rlnMicrographIceThickness label
 
@@ -58,7 +97,7 @@ The output micrograph_ctf_ice.star file can be used for a manual selection (Subs
 
 This script provides LIVE feedback for On-The-Fly data processing with RELION
 
-### Usage
+### Relion_Live Usage
 
 Execute the script from your project directory
 `relion_live.py`
@@ -66,13 +105,20 @@ Execute the script from your project directory
 *If the script is not in your PATH, use the full explicit path to the script.*
 
 It admits two arguments (quite often the default parameters are ok):
-* **--port**: choose the port were you want to launch the webapp (default: 8051)
-* **--host**: choose the IP address where you want the webapp to be hosted (default: localhost).
+
+- **--port**: choose the port were you want to launch the webapp (default: 8051)
+
+- **--host**: choose the IP address where you want the webapp to be hosted (default: localhost).
 
 Example:
-`relion_live.py --host 01.010.101.010 --port 805`
+
+```bash
+relion_live.py --host 01.010.101.010 --port 8050
+```
 
 Open a web browser and access the server (localhost:8050)
+
+![Alt text](pics/relion_live.png)
 
 ### Displaying images for micrograph and CTF
 
@@ -84,30 +130,39 @@ If you want to include it in your relion\_it.py schedule use the Schemes folder 
 
 ## Tools for relion data analysis: relion_analyse.py
 
+Same instructions as above still apply.
+
 This script launches a webapp to analyse in detail each RELION job in a given project. The webapp is organized in 6 different tabs:
 
-* **Relion pipeline**: an overview of all the nodes in the project and their connectivity.
-<img width="1438" alt="Screenshot 2022-07-14 at 20 15 37" src="https://user-images.githubusercontent.com/60991432/179053765-b0be299c-430d-4b7a-ac20-a4ececf9f49f.png">
+- **Relion pipeline**: an overview of all the nodes in the project and their connectivity.
 
-* **Analyse micrographs**: an interactive scatter plot to analyze any micrograph's parameter vs any other (especially useful in combination with https://github.com/cryoEM-CNIO/CNIO_Ctf_Ice_Thickness!).
-<img width="1438" alt="Screenshot 2022-07-14 at 20 18 51" src="https://user-images.githubusercontent.com/60991432/179054307-012e224b-678a-473d-8c2e-a45916283e81.png">
+![Relion pipeline](pics/relion_analyse.png)
 
-* **Analyse particles**: an interactive scatter plot to analyze any set of particle's parameter vs any other.
-<img width="1438" alt="Screenshot 2022-07-14 at 20 23 23" src="https://user-images.githubusercontent.com/60991432/179055092-08e31056-253b-4627-b4f1-0cec84d2f458.png">
+- **Analyse micrographs**: an interactive scatter plot to analyze any micrograph's parameter vs any other (especially useful in combination with <https://github.com/cryoEM-CNIO/CNIO_Ctf_Ice_Thickness>!).
 
-* **Analyse 2D Classification**: a tab dedicated to analyse or follow in real time your 2D classifications, monitoring particle distribution per class and convergence.
-<img width="1438" alt="Screenshot 2022-07-14 at 20 25 21" src="https://user-images.githubusercontent.com/60991432/179055437-d23cc833-016a-4820-858a-53aac1925df7.png">
+![Analyse micrographs](https://user-images.githubusercontent.com/60991432/179054307-012e224b-678a-473d-8c2e-a45916283e81.png)
 
-* **Analyse 3D Classification**: follow the convergence of the classification, per-class distribution of particles and alignment in each iteration of 3D classifications.
-<img width="1438" alt="Screenshot 2022-07-14 at 20 27 11" src="https://user-images.githubusercontent.com/60991432/179055781-fb41965c-dd17-4322-9c8c-118d14ba1ea4.png">
+- **Analyse particles**: an interactive scatter plot to analyze any set of particle's parameter vs any other.
 
-* **Analyse 3D Refine**: follow in real time the convergence, angular distribution and FSC in each iteration.
-![WhatsApp Image 2022-07-14 at 8 34 12 PM](https://user-images.githubusercontent.com/60991432/179057309-fedef18d-78d6-42b4-a472-6a226cad1f70.jpeg)
+![Analyse particles](https://user-images.githubusercontent.com/60991432/179055092-08e31056-253b-4627-b4f1-0cec84d2f458.png)
+
+- **Analyse 2D Classification**: a tab dedicated to analyse or follow in real time your 2D classifications, monitoring particle distribution per class and convergence.
+
+![Analyse 2D Classification](https://user-images.githubusercontent.com/60991432/179055437-d23cc833-016a-4820-858a-53aac1925df7.png)
+
+- **Analyse 3D Classification**: follow the convergence of the classification, per-class distribution of particles and alignment in each iteration of 3D classifications.
+
+![Analyse 3D Classification](https://user-images.githubusercontent.com/60991432/179055781-fb41965c-dd17-4322-9c8c-118d14ba1ea4.png)
+
+- **Analyse 3D Refine**: follow in real time the convergence, angular distribution and FSC in each iteration.
+
+![Analyse 3D Refine](https://user-images.githubusercontent.com/60991432/179057309-fedef18d-78d6-42b4-a472-6a226cad1f70.jpeg)
 
 Note that all plots are interactive. The ones in in the **Analyse particles** and **Analyse micrographs** tabs can also be used to select a subset of micrographs/particles graphically and export them as a .star file that can then be imported into RELION:
-![179057807-e8910017-0c4a-45ca-bd60-c0c97046a417](https://user-images.githubusercontent.com/60991432/179060588-c2b8a6f6-4927-4edc-88bd-cd8d9036bbf8.gif)
 
-### Usage
+![In-graph Selection](https://user-images.githubusercontent.com/60991432/179060588-c2b8a6f6-4927-4edc-88bd-cd8d9036bbf8.gif)
+
+### Relion_Analyse Usage
 
 **Execute the script from your project directory**
 `conda activate relion_dashboard`
@@ -116,9 +171,13 @@ Note that all plots are interactive. The ones in in the **Analyse particles** an
 *If the script is not in your PATH, use the full explicit path to the script.*
 
 It admits two arguments (quite often the default parameters are ok):
-* **--port**: choose the port were you want to launch the webapp (default: 8051)
 
-* **--host**: choose the IP address where you want the webapp to be hosted (default: localhost).
+- **--port**: choose the port were you want to launch the webapp (default: 8051)
+
+- **--host**: choose the IP address where you want the webapp to be hosted (default: localhost).
 
 Example:
-`relion_dashboard.py --host 01.010.101.010 --port 8051`
+
+```bash
+relion_dashboard.py --host 01.010.101.010 --port 8051
+```

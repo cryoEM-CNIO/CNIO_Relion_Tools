@@ -44,11 +44,9 @@ _rlnSchemeJobName #2
 _rlnSchemeJobMode #3 
 _rlnSchemeJobHasStarted #4 
    ctffind    ctffind   continue            0 
-    do_png     do_png   continue            0 
    get_ice    get_ice   continue            0 
 importmovies importmovies   continue            0 
 motioncorr motioncorr   continue            0 
-import_mic_sele import_mic_sele   continue            1 
  
 
 # version 30001
@@ -65,7 +63,6 @@ _rlnSchemeEdgeBooleanVariable #5
 EXIT_maxtime importmovies            0  undefined  undefined 
 importmovies motioncorr            0  undefined  undefined 
 motioncorr    ctffind            0  undefined  undefined 
-   ctffind     do_png            0  undefined  undefined 
-    do_png    get_ice            0  undefined  undefined 
-   get_ice import_mic_sele            0  undefined  undefined 
-import_mic_sele       WAIT            0  undefined  undefined 
+   ctffind     get_ice            0  undefined  undefined 
+   get_ice       WAIT            0  undefined  undefined 
+ 

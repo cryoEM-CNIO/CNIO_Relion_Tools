@@ -246,13 +246,13 @@ app.layout = html.Div([
 
         html.Div([
             html.Div([
-                html.H5("Import Job:", style=general_text_style),
+                html.H5("Import:", style=general_text_style),
                 dcc.Dropdown(id= 'import_name', options=[],value=None,style=dropdown_style),
-                html.H5("MotionCorr Job:", style=general_text_style),
+                html.H5("MotionCorr:", style=general_text_style),
                 dcc.Dropdown(id='motion_name', options=[],value=None,style=dropdown_style),
-                html.H5("CtfFind Job:", style=general_text_style),
+                html.H5("CtfFind:", style=general_text_style),
                 dcc.Dropdown(id='ctf_name', options=[],value=None,style=dropdown_style),
-                html.H5("IceFind Job:", style=general_text_style),
+                html.H5("Ice Thickness:", style=general_text_style),
                 dcc.Dropdown(id='ice_name', options=[],value=None,style=dropdown_style),
             ],style=dropdown_group_style),
             
@@ -761,7 +761,7 @@ def load_progress(motion_len, xrange, ctf_len, ice_len):
         domain = {'x': [0.80, 1.0], 'y': [0, 1]},
         value = ice_len,
         mode = "gauge+number+delta",
-        title = {'text': "IceThickness"},
+        title = {'text': "Ice Thickness"},
         delta = {'reference': xrange},
         gauge = {'steps': [{'range': [0,xrange], 'thickness':0.4, 'color':color_ice2}], 'axis': {'range': [None, xrange],'visible': False}, 'borderwidth': 0,'shape': "bullet",  'bar': {'color': color_ice1,'thickness':0.4}},
         ))
