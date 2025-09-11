@@ -11,6 +11,10 @@ This is a collection of scripts that we use during cryoEM data collection and an
 
 ## Installation
 
+### Relion
+
+You should have a working installation of Relion 5.0 on your system.
+
 ### Creating conda environment
 
 We encourage you to create a relion_dashboard conda environment that you can use to run these scripts
