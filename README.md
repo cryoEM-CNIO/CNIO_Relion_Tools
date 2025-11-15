@@ -5,7 +5,7 @@ This is a collection of scripts that we use during cryoEM data collection and an
 - ice.py --> micrograph ice thickness/quality estimation
 - png_out.py --> generation of png files from micrographs and ctf images
 - relion_live.py --> LIVE feedback for On-The-Fly data processing with RELION (very useful to explore already processed datasets too!)
-- relion_dashboard.py --> RELION metadata analysis
+- relion_analyse.py --> RELION metadata analysis
 
 *Nayim Gonzalez-Rodriguez, Emma Arean-Ulloa & Rafael Fernandez-Leiro*
 
@@ -178,7 +178,7 @@ Note that all plots are interactive. The ones in in the **Analyse particles** an
 
 **Execute the script from your project directory**
 `conda activate relion_dashboard`
-`relion_dashboard.py`
+`relion_analyse.py`
 
 *If the script is not in your PATH, use the full explicit path to the script.*
 
@@ -191,5 +191,5 @@ It admits two arguments (quite often the default parameters are ok):
 Example:
 
 ```bash
-relion_dashboard.py --host 01.010.101.010 --port 8051
+relion_analyse.py --host 01.010.101.010 --port 8051
 ```
