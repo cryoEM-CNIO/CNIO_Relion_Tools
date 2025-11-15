@@ -45,7 +45,7 @@ else: port_number = args.port
 if not args.host: hostname = socket.gethostname()
 else: hostname = args.host 
 if not args.debug: debug_mode = False
-else: debug_mode = args.host
+else: debug_mode = args.debug
 
 ### FUNCTION DEFINITIONS ###
 
@@ -422,7 +422,7 @@ def serve_layout():
                     html.Div(style=tab_left_div_style, children=[
                         # Dropdowns for starfile selection
                         html.H5('Micrograph starfile to analyse', style=H5_title_style),
-                        dcc.Dropdown(id='mic_star', placeholder='choose starfile...', options=pipeline_reader1('default_pipeline.star', 'MicrographsData'), style=dd_style),
+                        dcc.Dropdown(id='mic_star', placeholder='choose starfile...', options=pipeline_reader1('default_pipeline.star', 'Micrograph'), style=dd_style),
                         # Dropdowns for variable selection
                         html.H5('Choose axes (x, y and colouring)', style=H5_title_style),
                         html.Div(children=[
@@ -472,7 +472,7 @@ def serve_layout():
                     html.Div(style=tab_left_div_style,children=[
                         # Dropdowns for starfile selection
                         html.H5('Particle starfile to analyse', style=H5_title_style),
-                        dcc.Dropdown(id='ptcl_star', placeholder='choose starfile...', options=pipeline_reader1('default_pipeline.star', 'ParticlesData'), style=dd_style),
+                        dcc.Dropdown(id='ptcl_star', placeholder='choose starfile...', options=pipeline_reader1('default_pipeline.star', 'Particle'), style=dd_style),
             
                         # Dropdowns for variable selection
                         html.H5('Choose axes (x, y and colouring)', style={'font-family':'Helvetica', 'font-weight':'regular'}),
@@ -1122,6 +1122,7 @@ def load_df_and_graphs(job2follow, follow_dd_y, follow_model_dd_y, display_last_
         line_coloring = 'class_number'
         number_of_iterations = len(follow_opt_df[follow_dd_y])
         number_of_its_class3D = len(follow_classnumber_df)-1
+        print(job+f'run_it{number_of_its_class3D:03d}_data.star')
         angdist_per_class = starfile.read(job+f'run_it{number_of_its_class3D:03d}_data.star')['particles'][['rlnClassNumber', 'rlnAngleRot', 'rlnAngleTilt']]
         sampling_angle_class = float(starfile.read(job+f'run_it{number_of_its_class3D:03d}_sampling.star')['sampling_general']['rlnPsiStep'])
 

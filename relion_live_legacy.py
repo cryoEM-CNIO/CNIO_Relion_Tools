@@ -252,6 +252,8 @@ app.layout = html.Div([
                 dcc.Dropdown(id='motion_name', options=[],value=None,style=dropdown_style),
                 html.H5("CtfFind:", style=general_text_style),
                 dcc.Dropdown(id='ctf_name', options=[],value=None,style=dropdown_style),
+                html.H5("Ice Thickness:", style=general_text_style),
+                dcc.Dropdown(id='ice_name', options=[],value=None,style=dropdown_style),
             ],style=dropdown_group_style),
             
             html.Div(style={'flex-grow': '1'}),  # Empty div with flex-grow property
@@ -425,13 +427,15 @@ app.layout = html.Div([
 @app.callback(
     [Output(component_id= "import_name", component_property="options"), 
     Output(component_id= "motion_name", component_property="options"),
-    Output(component_id= "ctf_name", component_property="options")],            
+    Output(component_id= "ctf_name", component_property="options"),
+    Output(component_id= "ice_name", component_property="options")],            
     [Input(component_id='interval-component', component_property='n_intervals')])
 def load_jobs_name(interval):
     import_jobs= get_jobs_list("default_pipeline.star","import.movies") #temp solution
     motion_jobs= get_jobs_list("default_pipeline.star","motioncorr.own") #temp solution
     ctf_jobs= get_jobs_list("default_pipeline.star","ctffind.ctffind4") #temp solution
-    return (import_jobs, motion_jobs, ctf_jobs)
+    ice_jobs= get_jobs_list("default_pipeline.star","external")
+    return (import_jobs, motion_jobs, ctf_jobs, ice_jobs)
 
 ## Callback 2: set dimensions of x axis
 @app.callback(
@@ -662,7 +666,7 @@ def load_ctf_data(motionfilterdata, ctffilterdata, icefilterdata, ctf_name, xran
     [Input(component_id='filter-motion-data-store', component_property='data'),
      Input(component_id='filter-ctf-data-store', component_property='data'),
      Input(component_id='filter-ice-data-store', component_property='data'),
-     Input(component_id='ctf_name', component_property='value'),
+     Input(component_id='ice_name', component_property='value'),
      Input(component_id='xrange', component_property='value'),
      State(component_id='ice_minmax', component_property='max'),
      Input(component_id='ice_minmax', component_property='value'),
@@ -674,31 +678,31 @@ def load_ctf_data(motionfilterdata, ctffilterdata, icefilterdata, ctf_name, xran
      Input(component_id='filtered-df-export-len', component_property='value'),
      Input(component_id='interval-component', component_property='n_intervals')]
 )
-def load_ice_data(motionfilterdata, ctffilterdata, icefilterdata, ctf_name, xrange, input_ice_max, input_ice_minmax, ice_upper_limit_filter, ice_lower_limit_filter, input_ice_graph, input_ice_len, input_filtered_df, input_filtered_micrographs_len, n_intervals):
+def load_ice_data(motionfilterdata, ctffilterdata, icefilterdata, ice_name, xrange, input_ice_max, input_ice_minmax, ice_upper_limit_filter, ice_lower_limit_filter, input_ice_graph, input_ice_len, input_filtered_df, input_filtered_micrographs_len, n_intervals):
     component_id = ctx.triggered_id
 
     filtered_micrographs_len = 0
     if component_id in [None, 'ice_name', 'interval-component', 'filter-ice-data-store','filtered-df-export-store']:
 
         # Get starfile path
-        icestar_path = (relion_wd)+'/CtfFind/'+(ctf_name)+'/micrographs_ctf.star'
+        icestar_path = (relion_wd)+'/External/'+(ice_name)+'/micrographs_ctf_ice.star'
 
         # Check if starfile exists
         if os.path.exists(icestar_path):
             ice_df = starfile.read(icestar_path)['micrographs']
             ice_df.index += 1
-            icemax = int(max(ice_df['rlnCtfIceRingDensity'])) + 1
+            icemax = int(max(ice_df['rlnMicrographIceThickness'])) + 1
             ice_len = len(ice_df)
 
-            ice_df['UserFilterIce'] = (ice_df['rlnCtfIceRingDensity'] >= ice_lower_limit_filter) & (ice_df['rlnCtfIceRingDensity'] <= ice_upper_limit_filter) # Adding column for user filter
+            ice_df['UserFilterIce'] = (ice_df['rlnMicrographIceThickness'] >= ice_lower_limit_filter) & (ice_df['rlnMicrographIceThickness'] <= ice_upper_limit_filter) # Adding column for user filter
             
             icedataout = json.dumps(ice_df.to_dict())
 
             ice_df = merge_filters(ice_df, motionfilterdata, 'UserFilterIce', 'UserFilterMotion')
             ice_df = merge_filters(ice_df, ctffilterdata, 'UserFilterIce', 'UserFilterCtf')
             
-            ice_graph = plot_scatter(ice_df, input_ice_minmax, xrange, 'Ice Thickness Score', 'rlnCtfIceRingDensity', color_ice1, 'UserFilterIce', ice_upper_limit_filter, ice_lower_limit_filter)
-            ice_graph.update_layout(uirevision=ctf_name)
+            ice_graph = plot_scatter(ice_df, input_ice_minmax, xrange, 'Ice Thickness Score', 'rlnMicrographIceThickness', color_ice1, 'UserFilterIce', ice_upper_limit_filter, ice_lower_limit_filter)
+            ice_graph.update_layout(uirevision=ice_name)
             clean_ice_df = ice_df[(ice_df['UserFilterIce'])]
             filtered_micrographs_len = len(clean_ice_df)
             clean_df_export = json.dumps(clean_ice_df.to_dict())
@@ -728,15 +732,16 @@ def load_ice_data(motionfilterdata, ctffilterdata, icefilterdata, ctf_name, xran
     Output(component_id='progress_graph', component_property='figure'),
     [Input(component_id='motion_len', component_property='data'),
      Input(component_id='xrange', component_property='max'),
-     Input(component_id='image_index', component_property='max')]
+     Input(component_id='image_index', component_property='max'),
+     Input(component_id='ice_len', component_property='data')]
 )
-def load_progress(motion_len, xrange, ctf_len):
+def load_progress(motion_len, xrange, ctf_len, ice_len):
 
     # Plotting progress data
     progress = go.Figure()
 
     progress.add_trace(go.Indicator(
-        domain = {'x': [0.10, 0.4], 'y': [0, 1]},
+        domain = {'x': [0.10, 0.30], 'y': [0, 1]},
         value = motion_len,
         mode = "gauge+number+delta",
         title = {'text': "MotionCorr"},
@@ -744,14 +749,23 @@ def load_progress(motion_len, xrange, ctf_len):
         gauge = {'steps': [{'range': [0,xrange], 'thickness':0.4, 'color':color_motion2}], 'axis': {'range': [None, xrange],'visible': False}, 'borderwidth': 0,  'shape': "bullet", 'bar': {'color': color_motion1,'thickness':0.4}},
         ))
     progress.add_trace(go.Indicator(
-        domain = {'x': [0.5, 0.9], 'y': [0, 1]},
+        domain = {'x': [0.45, 0.65], 'y': [0, 1]},
         value = ctf_len,
         mode = "gauge+number+delta",
         title = {'text': "CtfFind"},
         delta = {'reference': xrange},
         gauge = {'steps': [{'range': [0,xrange], 'thickness':0.4, 'color':color_ctf2}], 'axis': {'range': [None, xrange],'visible': False}, 'borderwidth': 0,'shape': "bullet",  'bar': {'color': color_ctf1,'thickness':0.4}},
         ))
-        
+    
+    progress.add_trace(go.Indicator(
+        domain = {'x': [0.80, 1.0], 'y': [0, 1]},
+        value = ice_len,
+        mode = "gauge+number+delta",
+        title = {'text': "Ice Thickness"},
+        delta = {'reference': xrange},
+        gauge = {'steps': [{'range': [0,xrange], 'thickness':0.4, 'color':color_ice2}], 'axis': {'range': [None, xrange],'visible': False}, 'borderwidth': 0,'shape': "bullet",  'bar': {'color': color_ice1,'thickness':0.4}},
+        ))
+    
     progress.update_layout(height=220, )
 
     return progress
@@ -827,17 +841,17 @@ def select_image(ctf_name, image_index, image_index_input, totalmotion_clickdata
 
 @app.callback(
     [Output(component_id='placeholder', component_property='data')],
-    [Input(component_id='ctf_name', component_property='value'),
+    [Input(component_id='ice_name', component_property='value'),
      Input(component_id='filtered-df-export-store', component_property='data'),
      Input(component_id='export-filtered-data-button', component_property='n_clicks'),
      Input(component_id='interval-component', component_property='n_intervals')])
 
-def export_filtered_starfile(ctf_name, filtered_data, button_pressed_clicks, n_intervals):
+def export_filtered_starfile(ice_name, filtered_data, button_pressed_clicks, n_intervals):
     component_id = ctx.triggered_id
     if (component_id in ['export-filtered-data-button']) | (n_intervals % 2 == 0):
-        ctfstar_path = (relion_wd)+'/CtfFind/'+(ctf_name)+'/micrographs_ctf.star'
+        icestar_path = (relion_wd)+'/External/'+(ice_name)+'/micrographs_ctf_ice.star'
         ReadInMicrographs = pd.DataFrame.from_dict(json.loads(filtered_data)).reset_index(drop=True)
-        ReadInOptics = starfile.read(ctfstar_path)['optics']
+        ReadInOptics = starfile.read(icestar_path)['optics']
         ReadInMerge = {'optics' : ReadInOptics, 'micrographs' : ReadInMicrographs}
         starfile.write(ReadInMerge, 'exported_filtered_micrographs.star', overwrite=True)
     return(['bla'])

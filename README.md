@@ -9,6 +9,14 @@ This is a collection of scripts that we use during cryoEM data collection and an
 
 *Nayim Gonzalez-Rodriguez, Emma Arean-Ulloa & Rafael Fernandez-Leiro*
 
+## Update notes 20251115
+
+- RELION5 now natively calculates ice signal during CTF estimation. This value is stored under the `_rlnCtfIceRingDensity` column in `micrographs_ctf.star`. As a result:
+    - `relion_live.py` has been updated to retrieve that data directly from the CTF estimation job.
+    - `ice.py` has been renamed `ice_legacy.py` to still support compatibility with RELION4.
+- Exporting PNGs for micrographs and power spectra is now paralellized in `png_out.py`. It can be used by increasing the number of threads in the External job. The default `Schemes` are updated accordingly.
+
+
 ## Installation
 
 ### Relion
